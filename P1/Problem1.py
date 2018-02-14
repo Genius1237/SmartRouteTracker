@@ -60,7 +60,7 @@ class MissionRescue:
 				temp.append(temp2)
 			self.visited.append(temp)
 
-		self.state = (a,b)
+		self.state = (self.numMissionaries,self.numCannibals)
 		self.getOnBoat = []
 		self.path=[]
 
@@ -106,7 +106,32 @@ class MissionRescue:
 
 		return possibleNextStates
 
-
+	"""
+	* Method to present the solution as a Sequence of
+	* Boat rides from west to east bank and vice versa.
+	"""
+	def showResults(self,answer):
+		print("-----------------Route------------------")
+		print("--West-Bank------------------East-Bank--")
+		print("----M-|-C----------------------M-|-C----")
+		size = len(answer)
+		size = size//2
+		answer.reverse()
+		
+		for state in answer:
+			print("    ",end="")
+			print(str(state[0]),end=" | ")
+			print(str(state[1]),end="")
+			if(state[2]==0):
+				print(" \\___/                ",end="")
+			else:
+				print("                \\___/ ",end="")
+			
+			print(str(self.numMissionaries-state[0]),end=" | ")
+			print(str(self.numCannibals-state[1]),end="     ")
+			print()
+	
+	
 	"""
 	Function that start searching from state: self.state till state 0,0 
 	via Depth First Backtracking, and returns the path 
@@ -122,8 +147,8 @@ class MissionRescue:
 		pathStack.push(currState)
 		self.visited[currState.position[0]][currState.position[1]][flag]=1
 		while pathStack.empty()==False:
-			top = pathStack.top().position
-			flag = pathStack.top().flag
+			top = copy.deepcopy(pathStack.top().position)
+			flag = copy.deepcopy(pathStack.top().flag)
 
 			if ( (top[0] < top[1] and top[0]!=0 and flag==1 ) or ( ( self.numMissionaries-top[0] < self.numCannibals-top[1]) and top[0]!=self.numMissionaries ) and flag==0 ):
 				print(top,flag,end="  ")
@@ -141,15 +166,20 @@ class MissionRescue:
 				print("Solution found.. have a look at it")
 				print(top[0],top[1])
 				pathStack.pop()
+				answerList = []
+				answerList.append((top[0],top[1],flag))
 				while not pathStack.empty():
 					print(pathStack.top().position[0],pathStack.top().position[1])
+					answerList.append((pathStack.top().position[0],pathStack.top().position[1],pathStack.top().flag))
 					pathStack.pop()
+				print()
+				self.showResults(answerList)
 				return
 
 			for path in neighbours:
-				if ( self.visited[path[0]][path[1]][flag] == 0 ):
+				if ( self.visited[path[0]][path[1]][flag^1] == 0 ):
 					atleastOnePath = True
-					self.visited[path[0]][path[1]][flag]=1
+					self.visited[path[0]][path[1]][flag^1]=1
 					nextState = State()
 					nextState.position = copy.deepcopy(path)
 					nextState.flag = copy.deepcopy(flag^1)
@@ -161,5 +191,5 @@ class MissionRescue:
 
 
 
-obj = MissionRescue(3,3)
+obj = MissionRescue(4,4)
 obj.searchSolution()
