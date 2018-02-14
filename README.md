@@ -3,7 +3,7 @@
 ### Problem 1 : Missionaries and Cannibals
 
 To run the program: <br>
-`Python3 Problem1.py`
+`Python3 P1/Problem1.py`
 
 The number of Missionaries and Cannibals initially can be fixed to any number, and the boat is assumed to be able to carry a maximum of two passengers for a trip.
 
