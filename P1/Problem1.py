@@ -191,5 +191,5 @@ class MissionRescue:
 
 
 
-obj = MissionRescue(4,4)
+obj = MissionRescue(3,3)
 obj.searchSolution()
