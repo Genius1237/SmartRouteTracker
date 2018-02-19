@@ -37,6 +37,7 @@ def AStarFunc(start,end = 2803176428):
 		if curr_loc == end:
 			print(d)
 			path=[end]
+			path1=[node_hash[end][0]]
 			i=0
 			node=end
 			while True:
@@ -45,9 +46,42 @@ def AStarFunc(start,end = 2803176428):
 					break
 				else:
 					path.insert(0,pa)
+					path1.insert(0,node_hash[pa][0])
 					node=pa
 
-			print(path)
+			print(path1)
+			'''
+			a=np.zeros((len(adj_list),len(adj_list)))
+			for i in range(len(adj_list)):
+				for j in range(len(adj_list[i])):
+					a[i][node_hash[adj_list[i][j][0]][0]]=1
+
+			g = Graph.Adjacency(a.tolist())
+			
+			#keys=node_hash.keys()
+			names=[]
+			#for key in node_hash:
+				#names.insert(node_hash[key][0],'{},{}'.format(node_hash[key][1],node_hash[key][2]))
+			#names.insert(0,'{},{}'.format(node_hash[n][1],node_hash[n][2]))
+			#print(names)
+
+			#	g.vs["name"] = names
+			layout = g.layout("kk")
+			visual_style = {}
+			visual_style["vertex_size"] = [30]
+			visual_style["vertex_label"] = [a for a in g.vs["name"]]
+			color_dict = {"0":"red"}
+			g.vs["color"] = color_dict["0"]
+			visual_style["edge_arrow_size"]=4
+			visual_style["vertex_label_size"]=30
+			visual_style["layout"] = layout
+			visual_style["bbox"] = (3500, 3500)
+			visual_style["margin"] = 300
+			visual_style["edge_width"] = 4
+			plot(g, **visual_style)
+			'''
+			#'''
+			nnn=0
 			for n in path:
 				no =len(adj_list[node_hash[n][0]])+1
 				a=np.zeros((no,no))
@@ -55,22 +89,35 @@ def AStarFunc(start,end = 2803176428):
 					a[0][i+1]=1
 
 				g = Graph.Adjacency(a.tolist())
-				names=['{},{}'.format(node_hash[i[0]][1],node_hash[i[0]][2]) for i in adj_list[node_hash[n][0]]]
-				names.insert(0,'{},{}'.format(node_hash[n][1],node_hash[n][2]))
+				names=['{}\n{}\n{}'.format(node_hash[i[0]][0],node_hash[i[0]][1],node_hash[i[0]][2]) for i in adj_list[node_hash[n][0]]]
+				names.insert(0,'{}\n{}\n{}'.format(node_hash[n][0],node_hash[n][1],node_hash[n][2]))
+				color_dict = {0:"red",1:"green"}
+				colors=[color_dict[1]]
+				for i in range(no-1):
+					if nnn-1>=0 and path[nnn-1]==adj_list[node_hash[n][0]][i][0]:
+						colors.append(color_dict[1])
+					elif nnn+1<len(path) and path[nnn+1]==adj_list[node_hash[n][0]][i][0]:
+						colors.append(color_dict[1])
+					else:
+						colors.append(color_dict[0])
+
+				#print(names)
+
 				g.vs["name"] = names
 				layout = g.layout("kk")
 				visual_style = {}
-				visual_style["vertex_size"] = [30]
-				visual_style["vertex_label"] = [g.vs["name"]]
-				color_dict = {"0":"red"}
-				g.vs["color"] = color_dict["0"]
-				visual_style["edge_arrow_size"]=4
-				visual_style["vertex_label_size"]=30
+				visual_style["vertex_size"] = [300]
+				visual_style["vertex_label"] = [a for a in g.vs["name"]]
+				g.vs["color"] = colors
+				#visual_style["edge_arrow_size"]=4
+				visual_style["vertex_label_size"]=75
 				visual_style["layout"] = layout
 				visual_style["bbox"] = (3500, 3500)
 				visual_style["margin"] = 300
 				visual_style["edge_width"] = 4
 				plot(g, **visual_style)
+				nnn+=1
+			#'''
 			exit()
 		else:
 			for child in children(curr_loc):
