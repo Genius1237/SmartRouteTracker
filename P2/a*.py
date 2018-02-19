@@ -1,56 +1,103 @@
 import heapq
+import pickle
+import numpy as np
+from igraph import *
+import sys
+with open("node_hash.pickle","rb") as f:
+	node_hash = pickle.load(f)
+with open("adj_list.pickle","rb") as f:
+	adj_list = pickle.load(f)
+with open("distance_matrix.pickle","rb") as f:
+	distance_matrix = pickle.load(f)
 
-class Location:
-    def __init__():
-        self.parent = "Fill whatever you want"
-        self.f_val = 0
-        self.h_val = 0
-        self.g_val = 0
+def heuristic_func(node):
+	return distance_matrix[node_hash[node][0]]
 
-    def CalcActualDist():
-        return
+def children(node):
+	n = node_hash[node][0]
+	return [e[0] for e in adj_list[n]]
 
-    def HeuristicFunc():
-        return
+open_list_depth={}
+closed_list={}
+parent={}
 
-    def Children():
-        return
+def AStarFunc(start,end = 2803176428):
+	open_list = []
+	d=0
+	heapq.heappush(open_list,(heuristic_func(start),start))
+	open_list_depth[start]=d
 
-    def AStarFunc(start,end):
+	curr_loc = start
+	parent[start]=-1
+	while open_list:
+		_,curr_loc = heapq.heappop(open_list)
+		d = open_list_depth[curr_loc]
+		del open_list_depth[curr_loc]
 
-        open_list = []
-        closed_list = set()
-        heapq.heapify(open_list)
-        heapq.heappush(open_list,start)
+		if curr_loc == end:
+			print(d)
+			path=[end]
+			i=0
+			node=end
+			while True:
+				pa=parent[node]
+				if pa==-1:
+					break
+				else:
+					path.insert(0,pa)
+					node=pa
 
-        curr_loc = start
-        while open_list:
-            curr_loc = heapq.heappop(open_list,key = lambda k:k.f_val)
+			print(path)
+			for n in path:
+				no =len(adj_list[node_hash[n][0]])+1
+				a=np.zeros((no,no))
+				for i in range(no-1):
+					a[0][i+1]=1
 
-            if curr_loc == end:
-                route = []
-                while curr_loc.parent:
-                    route.append(curr_loc)
-                    current = current.parent
-                route.append(current)
-                return route
+				g = Graph.Adjacency(a.tolist())
+				names=['{},{}'.format(node_hash[i[0]][1],node_hash[i[0]][2]) for i in adj_list[node_hash[n][0]]]
+				names.insert(0,'{},{}'.format(node_hash[n][1],node_hash[n][2]))
+				g.vs["name"] = names
+				layout = g.layout("kk")
+				visual_style = {}
+				visual_style["vertex_size"] = [30]
+				visual_style["vertex_label"] = [g.vs["name"]]
+				color_dict = {"0":"red"}
+				g.vs["color"] = color_dict["0"]
+				visual_style["edge_arrow_size"]=4
+				visual_style["vertex_label_size"]=30
+				visual_style["layout"] = layout
+				visual_style["bbox"] = (3500, 3500)
+				visual_style["margin"] = 300
+				visual_style["edge_width"] = 4
+				plot(g, **visual_style)
+			exit()
+		else:
+			for child in children(curr_loc):
+				if child in open_list_depth:
+					if open_list_depth[child] > d+1:
+						open_list_depth[child] = d+1
+						parent[child]=curr_loc
 
-            else:
-                for child in curr_loc.Children():
-                    if child in open_list:
-                        new_g_val = curr_loc.g_val + curr_loc.CalcActualDist(child)
-                        if child.g_val > new_g_val:
-                            child.g_val = new_g_val
-                            child.parent = curr_loc
+				elif child in closed_list:
+					if closed_list[child] > d+1:
+						open_list_depth[child] = d+1
+						del closed_list[child]
+						heapq.heappush(open_list,(heuristic_func(child),child))
+						parent[child]=curr_loc
 
-                    elif child in closed_list:
-                        new_g_val = curr_loc.g_val + curr_loc.CalcActualDist(child)
-                        if child.g_val > new_g_val:
-                            heapq.heappush(open_list,child)
-                            closed_list.remove(child)
+				else:
+					heapq.heappush(open_list,(heuristic_func(child),child))
+					open_list_depth[child]=d+1
+					parent[child]=curr_loc
 
-                    else:
-                        child.h_val = curr_loc.HeuristicFunc(child)
-                        heapq.heappush(open_list,child)
+		closed_list[curr_loc] = d
 
-            closed_list.add(curr_loc)
+
+def main():
+	start = 2684820160
+	AStarFunc(start)
+
+
+if __name__ == '__main__':
+	main()

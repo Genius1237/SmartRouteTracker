@@ -22,3 +22,15 @@ The class MissionRescue is used for finding the sequence of trips to reach our p
 - **possiblePaths()** gives the set of all possible next states for the current state
 - **searchSolution()** Function that start searching from state: self.state till state 0,0 via Depth First Backtracking, and returns the path (may not be the shortest path) from start state to 0,0.
 - **showResults()** Method to present the solution as a Sequence of Boat rides from west to east bank and vice versa.
+
+### Problem 2 : A* Search
+
+Install the required dependencies : osmread, igraph
+
+To run
+`python P2/a*.py`
+This will display a graph with the current node, it's children. It will then show the chosen node and it's children and so on.
+
+map.py is used to extract data from the OSM file
+googlemaps.py is used to download data using the Google Maps Api
+node_hash.pickle, adj_list.pickle and distance_matrix.pickle store the information from the graph
